@@ -1,11 +1,11 @@
-
+#include <string>
 #include <iostream>
+#include <thread>
 #include <fstream>
 #include "utils.h"
 using namespace std;
 
-int main(int argc, char* argv[])
-{
+int main() {
     ifstream ifs("1.jpg", ios::binary );
 // get length of file:
     ifs.seekg (0, ios::end);
@@ -16,6 +16,7 @@ int main(int argc, char* argv[])
 // read data as a block:
     ifs.read (buffer,length);
     ifs.close();
-    invokeServer(buffer,length,"hello, server!");
 
+    thread t2(invokeServer,buffer,length,"hello server from thread");
+    t2.join();
 }

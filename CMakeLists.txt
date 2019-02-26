@@ -21,9 +21,11 @@ endif()
 add_executable(server server.cpp)
 target_link_libraries(server PRIVATE ${OpenCV_LIBS}   pthread  ${Boost_LIBRARIES})
 
-add_executable(client client.cpp)
+add_executable(client client.cpp utils.cpp)
 target_link_libraries(client PRIVATE ${OpenCV_LIBS}   pthread  ${Boost_LIBRARIES} )
 
+add_executable(perf_test perfTestClient.cpp utils.cpp)
+target_link_libraries(perf_test PRIVATE ${OpenCV_LIBS}   pthread  ${Boost_LIBRARIES} )
 
 
 

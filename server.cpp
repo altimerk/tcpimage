@@ -15,13 +15,15 @@ io_service service;
 void handle_connections()
 {
     ip::tcp::acceptor acceptor(service, ip::tcp::endpoint(ip::tcp::v4(),8002));
+    //boost::asio::socket_base::reuse_address option(true);
+    //acceptor.set_option(option);
     vector<uchar> jpgbytes;
-    char lengthPart[4];
+    char lengthPart[sizeof(int)];
     while ( true)
     {
         ip::tcp::socket sock(service);
         acceptor.accept(sock);
-        sock.read_some(boost::asio::buffer(lengthPart, 4));
+        sock.read_some(boost::asio::buffer(lengthPart, sizeof(int)));
         int k;
         k = *(int*)lengthPart;
         char *data = new char[k];
@@ -30,7 +32,7 @@ void handle_connections()
             jpgbytes.insert(jpgbytes.end(), &data[0], &data[k]);
 
             //read string
-        sock.read_some(boost::asio::buffer(lengthPart, 4));
+        sock.read_some(boost::asio::buffer(lengthPart, sizeof(int)));
         k = *(int*)lengthPart;
         char *dataStr = new char[k];
         sock.read_some(boost::asio::buffer(dataStr,k));
@@ -38,7 +40,6 @@ void handle_connections()
         Mat image = imdecode(jpgbytes,IMREAD_COLOR);
         putText(image, text, Point(30, 30), FONT_HERSHEY_SIMPLEX, 0.75,
                 Scalar(0, 0, 255), 2);
-
         //write response
         vector<uchar> vbuf;
         imencode(".jpg",image,vbuf);
@@ -47,10 +48,8 @@ void handle_connections()
 
         const size_t bytesLength = boost::asio::write(sock,
                                                       boost::asio::buffer(&length, sizeof(int) ));
-
         const size_t bytes = boost::asio::write(sock,
                                                 boost::asio::buffer(buf,length )    );
-        cout<<"writen "<<bytes<<"bytes."<<endl;
         sock.close();
     }
 }
