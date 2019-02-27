@@ -12,8 +12,10 @@ using namespace std;
 using namespace boost::system;
 using namespace boost::asio;
 using namespace cv;
-io_service service;
-ip::tcp::endpoint ep( ip::address::from_string("127.0.0.1"), 8002);
+//io_service service;
+//ip::tcp::endpoint ep( ip::address::from_string("127.0.0.1"), 8002);
+boost::asio::io_service service;
+boost::asio::ip::tcp::endpoint ep( boost::asio::ip::address::from_string("127.0.0.1"), 8002);
 int invokeServer(char *buffer,int length,string text){
     boost::asio::io_service ios;
     boost::asio::ip::tcp::socket socket( ios );

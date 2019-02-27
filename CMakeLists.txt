@@ -27,6 +27,9 @@ target_link_libraries(client PRIVATE ${OpenCV_LIBS}   pthread  ${Boost_LIBRARIES
 add_executable(perf_test perfTestClient.cpp utils.cpp)
 target_link_libraries(perf_test PRIVATE ${OpenCV_LIBS}   pthread  ${Boost_LIBRARIES} )
 
+add_executable(asyncServer asyncServer.cpp)
+target_link_libraries(asyncServer PRIVATE ${OpenCV_LIBS}   pthread  ${Boost_LIBRARIES} )
+
 
 
 
