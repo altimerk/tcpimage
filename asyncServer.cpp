@@ -18,18 +18,22 @@ using namespace boost::posix_time;
 #define MEM_FN2(x,y,z) boost::bind(&talk_to_client::x, shared_from_this(),y,z)
 
 io_service service;
+int clientCount=0;
 class talk_to_client :public std::enable_shared_from_this<talk_to_client>,boost::noncopyable
 {
+    //static int clientCount;
 public:
     talk_to_client():sock_(service),timer_(service){
         cout<<"change this code"<<endl;
     }
 
     //typedef std::shared_ptr<talk_to_client> ptr;
-//    static std::shared_ptr<talk_to_client> init() {
-//        std::shared_ptr<talk_to_client> new_ = std::make_shared<talk_to_client>();
-//        return new_;
-//    }
+    static std::shared_ptr<talk_to_client> init() {
+        //std::shared_ptr<talk_to_client> new_ = std::make_shared<talk_to_client>();
+        std::shared_ptr<talk_to_client> new_ = std::shared_ptr<talk_to_client>(new talk_to_client);
+        //clientCount++;
+        return new_;
+    }
     typedef boost::system::error_code error_code;
 
 
@@ -96,28 +100,31 @@ public:
         const size_t bytes = boost::asio::write(sock_,
                                                 boost::asio::buffer(buf,length )    );
         //sock_.close();
-
+        clientCount--;
+        cout<<"client closed. count="<<clientCount<<endl;
 //        post_check_ping();
     }
 
-//    void on_check_ping()
-//    {
-//        ptime now = microsec_clock::local_time();
-//        if ( (now - last_ping).total_milliseconds() > 5000) stop();
-//        last_ping = boost::posix_time::microsec_clock::local_time();
-//    }
-//    void post_check_ping()
-//    {
-//        timer_.expires_from_now(boost::posix_time::millisec(5000));
-//        timer_.async_wait( MEM_FN(on_check_ping));
-//        //timer_.async_wait(boost::bind(&self_type::on_check_ping, shared_from_this()));
-//    }
+    void on_check_ping()
+    {
+        cout<<"on_check_ping"<<endl;
+        ptime now = microsec_clock::local_time();
+        if ( (now - last_ping).total_milliseconds() > 5000) stop();
+        last_ping = boost::posix_time::microsec_clock::local_time();
+    }
+    void post_check_ping()
+    {
+        timer_.expires_from_now(boost::posix_time::millisec(5000));
+        timer_.async_wait( MEM_FN(on_check_ping));
+        //timer_.async_wait(boost::bind(&self_type::on_check_ping, shared_from_this()));
+    }
     size_t read_complete(const boost::system::error_code & err, size_t bytes)
     {
         // ... as before
     }
     void on_read(const error_code & err, size_t bytes)
     {
+        cout<<"on_read"<<endl;
         if ( err) stop();
         if ( !started_ ) return;
         std::string msg(read_buffer_, bytes);
@@ -183,17 +190,19 @@ private:
 ip::tcp::acceptor acceptor(service, ip::tcp::endpoint(ip::tcp::v4(), 8002));
 void handle_accept(shared_ptr<talk_to_client> client, const error_code & err)
 {
-
+    cout<<"clientCount start="<<clientCount<<endl;
+    clientCount++;
     client->start();
-    shared_ptr<talk_to_client> new_client = make_shared<talk_to_client>();//::init();
+    shared_ptr<talk_to_client> new_client = talk_to_client::init();
     cout<<"use_count:"<<new_client.use_count()<<endl;
+    cout<<"clientCount end="<<clientCount<<endl;
     cout<<"count of client:"<<new_client->getClientCount()<<endl;
     acceptor.async_accept(new_client->sock(),
                           boost::bind(handle_accept,new_client,_1));
 }
 int main(int argc, char* argv[])
 {
-    shared_ptr<talk_to_client> client = make_shared<talk_to_client>();//::init();
+    shared_ptr<talk_to_client> client = talk_to_client::init();
     acceptor.async_accept(client->sock(), boost::bind(handle_accept,client,_1));
     service.run();
 }
