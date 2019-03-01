@@ -1,11 +1,10 @@
-# tcpimage
-To build:
+# To build:
 
 cmake .
 
 make
 
-To run:
+# To run:
 
 ./server < maxCountOfClients >
 
