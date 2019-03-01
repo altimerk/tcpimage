@@ -34,8 +34,8 @@ int invokeServer(char *buffer,int length,string text){
     const size_t strBytes = boost::asio::write(socket,
                                                boost::asio::buffer(text.c_str(),length)    );
 
-    std::cout << "sent image" << bytes << " bytes" << std::endl;
-    std::cout << "sent string" << strBytes << " bytes" << std::endl;
+    //std::cout << "sent image" << bytes << " bytes" << std::endl;
+    //std::cout << "sent string" << strBytes << " bytes" << std::endl;
     char lengthPart[sizeof(int)];
     //read size of image
     socket.read_some(boost::asio::buffer(lengthPart, 4));

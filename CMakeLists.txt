@@ -6,7 +6,7 @@ find_package(PkgConfig REQUIRED)
 find_package(Boost REQUIRED)
 
 find_package(OpenCV REQUIRED)
-find_package(Boost REQUIRED COMPONENTS system  thread)
+find_package(Boost REQUIRED COMPONENTS system  thread program_options)
 
 if(Boost_FOUND)
 
