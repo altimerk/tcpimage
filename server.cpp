@@ -135,8 +135,8 @@ void handle_connections(int clientsLimit) {
 }
 
 int main(int argc, char *argv[]) {
-    int limitOfClient;
-    if (argc < 1)
+    int limitOfClient=1000000;
+    if (argc > 1)
         limitOfClient = stoi(argv[1]);
 
     thread t1(accept_thread, limitOfClient);
